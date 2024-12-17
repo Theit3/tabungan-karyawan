@@ -75,18 +75,19 @@
     }
 
     var name = getQueryParam('name');
-    console.log("Nama karyawan yang dicari:", name); // Log untuk verifikasi
     if (name) {
-      google.script.run
-        .withSuccessHandler(showTransactions)
-        .withFailureHandler(function(error) {
-          console.error("Error memanggil Apps Script:", error);
-        })
-        .getTransactionData(name);
+      console.log("Nama karyawan yang dicari:", name); // Log untuk verifikasi
+      var url = 'https://script.google.com/macros/s/PROJECT_ID/exec?page=details&name=' + encodeURIComponent(name);
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => showTransactions(data))
+        .catch(error => {
+          console.error("Error memanggil Web App:", error);
+        });
     }
 
     function showTransactions(data) {
-      console.log("Data transaksi yang diterima:", data); // Log untuk verifikasi
       var tbody = document.getElementById('transaction-data');
       tbody.innerHTML = '';
       if (data && data.length) {
