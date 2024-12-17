@@ -75,13 +75,18 @@
     }
 
     var name = getQueryParam('name');
+    console.log("Nama karyawan yang dicari:", name); // Log untuk verifikasi
     if (name) {
-      console.log("Nama yang dicari:", name); // Log untuk verifikasi
-      google.script.run.withSuccessHandler(showTransactions).getTransactionData(name);
+      google.script.run
+        .withSuccessHandler(showTransactions)
+        .withFailureHandler(function(error) {
+          console.error("Error memanggil Apps Script:", error);
+        })
+        .getTransactionData(name);
     }
 
     function showTransactions(data) {
-      console.log("Data transaksi diterima:", data); // Log untuk verifikasi
+      console.log("Data transaksi yang diterima:", data); // Log untuk verifikasi
       var tbody = document.getElementById('transaction-data');
       tbody.innerHTML = '';
       if (data && data.length) {
@@ -103,4 +108,3 @@
   </script>
 </body>
 </html>
-
