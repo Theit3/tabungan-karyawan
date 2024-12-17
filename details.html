@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <title>Rincian Transaksi Tabungan</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f4f9;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      background-color: #4CAF50;
+      color: white;
+      width: 100%;
+      text-align: center;
+      padding: 20px 0;
+      margin: 0;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      font-size: 2em;
+    }
+    .transaction-table {
+      width: 90%;
+      max-width: 600px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      margin: 20px auto;
+      text-align: left;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+    }
+    th {
+      background-color: #4CAF50;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h1>Rincian Transaksi Tabungan</h1>
+  <div class="transaction-table">
+    <table>
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Bulan</th>
+          <th>Tabungan</th>
+          <th>Keterangan</th>
+        </tr>
+      </thead>
+      <tbody id="transaction-data"></tbody>
+    </table>
+  </div>
+
+  <script>
+    function getQueryParam(param) {
+      var urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+
+    function formatRupiah(amount) {
+      return 'Rp ' + parseInt(amount).toLocaleString('id-ID');
+    }
+
+    var name = getQueryParam('name');
+    if (name) {
+      google.script.run.withSuccessHandler(showTransactions).getTransactionData(name);
+    }
+
+    function showTransactions(data) {
+      var tbody = document.getElementById('transaction-data');
+      tbody.innerHTML = '';
+      if (data && data.length) {
+        for (var i = 0; i < data.length; i++) {
+          var row = data[i];
+          tbody.innerHTML += `
+            <tr>
+              <td>${i + 1}</td>
+              <td>${row.bulan}</td>
+              <td>${formatRupiah(row.tabungan)}</td>
+              <td>Transfer sukses</td>
+            </tr>
+          `;
+        }
+      } else {
+        tbody.innerHTML = '<tr><td colspan="4">Tidak ada transaksi</td></tr>';
+      }
+    }
+  </script>
+</body>
+</html>
