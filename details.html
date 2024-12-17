@@ -77,11 +77,19 @@
     var name = getQueryParam('name');
     if (name) {
       console.log("Nama karyawan yang dicari:", name); // Log untuk verifikasi
-      var url = 'https://script.google.com/macros/s/PROJECT_ID/exec?page=details&name=' + encodeURIComponent(name);
-
+      var url = 'https://script.google.com/macros/s/AKfycbzU5HiUGkFhiTkMQ74MPnG8MpNFq9aM5X8ZPpft_ZMYf82ltpvP6qfd8z2OlwIlnx2Z/exec' + encodeURIComponent(name);
+      
       fetch(url)
-        .then(response => response.json())
-        .then(data => showTransactions(data))
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log("Data transaksi yang diterima:", data); // Log untuk verifikasi
+          showTransactions(data);
+        })
         .catch(error => {
           console.error("Error memanggil Web App:", error);
         });
