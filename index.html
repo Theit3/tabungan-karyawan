@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <title>Dasbor Tabungan Karyawan</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f4f9;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      background-color: #4CAF50;
+      color: white;
+      width: 100%;
+      text-align: center;
+      padding: 20px 0;
+      margin: 0;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      font-size: 2em;
+    }
+    .note {
+      font-size: 0.9em;
+      color: #555;
+      margin-bottom: 20px;
+    }
+    form {
+      width: 90%;
+      max-width: 600px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      margin: 20px auto;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    select, input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      width: 100%;
+      margin-top: 20px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    #result {
+      width: 90%;
+      max-width: 600px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      margin: 20px auto;
+      text-align: left;
+    }
+    .result-item {
+      margin: 10px 0;
+    }
+    .result-item strong {
+      font-size: 1.2em;
+    }
+    .result-item small {
+      font-size: 0.9em;
+      font-weight: bold;
+    }
+    .result-icon {
+      font-size: 2em;
+      color: #4CAF50;
+      margin-bottom: 5px;
+    }
+    .result-amount {
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+    @media screen and (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+      h1 {
+        font-size: 24px;
+      }
+      form, #result {
+        padding: 10px;
+      }
+      select, input[type="text"], button {
+        width: 100%;
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Dasbor Tabungan Karyawan</h1>
+  <div class="note">Harap masukkan nama sesuai e-KTP dengan format Nama memakai huruf kapital di setiap kata-nya</div>
+  <form>
+    <label for="branch">Cabang:</label>
+    <select id="branch" name="branch">
+      <option value="Head Office">Head Office</option>
+      <option value="Tegal">Tegal</option>
+      <option value="Purwokerto">Purwokerto</option>
+      <option value="Pekalongan">Pekalongan</option>
+      <option value="Bandung">Bandung</option>
+      <option value="Yogyakarta">Yogyakarta</option>
+      <option value="Solo">Solo</option>
+      <option value="Tasikmalaya">Tasikmalaya</option>
+      <option value="Kebumen">Kebumen</option>
+      <option value="Magelang">Magelang</option>
+      <!-- Tambahkan cabang lainnya di sini -->
+    </select>
+    <label for="name">Nama Karyawan:</label>
+    <input type="text" id="name" name="name">
+    <button type="button" onclick="searchData()">Cari</button>
+  </form>
+  <div id="result"></div>
+
+  <script>
+    function searchData() {
+      var branch = document.getElementById('branch').value;
+      var name = document.getElementById('name').value;
+      console.log("Branch: " + branch + ", Name: " + name); // Log untuk verifikasi
+      google.script.run.withSuccessHandler(showResult).updateBranchAndGetData(branch, name);
+    }
+
+    function formatRupiah(amount) {
+      return 'Rp ' + parseInt(amount).toLocaleString('id-ID');
+    }
+
+    function showResult(data) {
+      console.log("Data received: ", data); // Log untuk verifikasi data
+      if (data) {
+        const simpananPokok = isNaN(data.simpananPokok) ? 0 : data.simpananPokok;
+        const simpananWajib = isNaN(data.simpananWajib) ? 0 : data.simpananWajib;
+        const totalSaldo = isNaN(data.totalSaldo) ? 0 : data.totalSaldo;
+
+        document.getElementById('result').innerHTML = `
+          <div class="result-item">
+            <strong>${data.nama}</strong>
+          </div>
+          <div class="result-icon">&#128100;</div>
+          <div class="result-item">
+            <small>${data.jabatan}</small>
+          </div>
+          <div class="result-item">
+            Simpanan Pokok: ${formatRupiah(simpananPokok)}
+          </div>
+          <div class="result-item">
+            Simpanan Wajib: ${formatRupiah(simpananWajib)}
+          </div>
+          <div class="result-item result-amount">
+            Total Tabungan: ${formatRupiah(totalSaldo)}
+          </div>
+          <button onclick="lihatRincian('${data.nama}')">Lihat Rincian</button>
+        `;
+      } else {
+        document.getElementById('result').innerHTML = 'Data tidak ditemukan';
+      }
+    }
+
+    function lihatRincian(nama) {
+      var url = 'https://script.google.com/macros/s/AKfycbx-KD_xs4gV7Y3LzWTBIzMzLMkLZ2BRe-I6i8YX43d7jKrkJ-2Ws_i7oc3Gbdsc6kZt/exec' + '?name=' + encodeURIComponent(nama);
+      console.log(url); // Tambahkan log ini 
+      window.open(url, '_blank');
+    }
+  </script>
+</body>
+ </html>
+          
