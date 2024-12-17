@@ -76,10 +76,12 @@
 
     var name = getQueryParam('name');
     if (name) {
+      console.log("Nama yang dicari:", name); // Log untuk verifikasi
       google.script.run.withSuccessHandler(showTransactions).getTransactionData(name);
     }
 
     function showTransactions(data) {
+      console.log("Data transaksi diterima:", data); // Log untuk verifikasi
       var tbody = document.getElementById('transaction-data');
       tbody.innerHTML = '';
       if (data && data.length) {
@@ -101,3 +103,4 @@
   </script>
 </body>
 </html>
+
